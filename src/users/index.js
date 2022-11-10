@@ -18,7 +18,8 @@ usersRouter.get(
     // The purpose of this endpoint is to bring users back, receiving a response from Google, then execute the callback function, then send a response to the client
 
     const { accessToken } = req.user // this is the place where Passport stores the data passed to the passportNext function
-    res.redirect(`${process.env.FE_URL}/users?accessToken=${accessToken}`)
+    res.cookie("accessToken", accessToken, { httpOnly: true })
+    res.redirect(`${process.env.FE_URL}/users`)
 
     try {
     } catch (error) {
@@ -113,7 +114,9 @@ usersRouter.post("/login", async (req, res, next) => {
     if (user) {
       // 3.1 If credentials are fine --> generate an access token (JWT) and a refresh token and send them back as a response
       const { accessToken, refreshToken } = await createTokens(user)
-      res.send({ accessToken, refreshToken })
+      res.cookie("accessToken", accessToken)
+      res.cookie("refreshToken", refreshToken)
+      res.redirect(`${process.env.FE_URL}/users`)
     } else {
       // 3.2 If credentials are NOT ok --> trigger an error 401
       next(createHttpError(401, `Credentials are not ok!`))

@@ -11,6 +11,7 @@ import {
   unauthorizedErrorHandler,
 } from "./errorHandlers.js"
 import googleStrategy from "./lib/auth/google.js"
+import cookieParser from "cookie-parser"
 
 const server = express()
 const port = process.env.PORT || 3001
@@ -19,7 +20,8 @@ passport.use("google", googleStrategy) // Do not forget to inform Passport that 
 
 // ******************************** MIDDLEWARES *********************************
 
-server.use(cors())
+server.use(cors({ origin: process.env.FE_URL, credentials: true }))
+server.use(cookieParser())
 server.use(express.json())
 server.use(passport.initialize()) // Do not forget to inform Express that we need to use Passport
 
